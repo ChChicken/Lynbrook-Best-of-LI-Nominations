@@ -2665,6 +2665,28 @@ function App() {
         height: 560
       });
 
+      // The main app's color variables (--green, --gold, etc.) are set via
+      // inline style on its root div. Inline-style custom properties don't
+      // cascade into a different document, even through a React portal —
+      // the portal preserves React's component tree, but the actual DOM
+      // lives in pip.document, a fully separate document from the parent
+      // page's. So we redefine the same variables directly here.
+      const varsStyle = pip.document.createElement("style");
+      varsStyle.textContent = `
+        :root {
+          --ink: #22301F;
+          --paper: #F7F3E9;
+          --paper-2: #FFFDF8;
+          --green: #1F4A3D;
+          --green-2: #2E5B4C;
+          --gold: #B98A2E;
+          --gold-soft: #E7D9B3;
+          --line: #DCD3BC;
+        }
+        body { background: var(--paper); color: var(--ink); font-family: 'Public Sans', -apple-system, sans-serif; }
+      `;
+      pip.document.head.appendChild(varsStyle);
+
       // Load the fonts directly via a <link> tag — @import rules inside a
       // dynamically-copied <style> tag are unreliable across browsers once
       // injected after page load, which is why fonts didn't show up before.
