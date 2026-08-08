@@ -2739,7 +2739,10 @@ function App() {
     return BUSINESSES.filter(b => {
       const catOk = activeCat === "All" || filterCategoriesOf(b).includes(activeCat);
       const qOk = !q || b.name.toLowerCase().includes(q) || b.directoryCategory.toLowerCase().includes(q);
-      return catOk && qOk;
+      // When actively searching, search the whole directory regardless of
+      // which category chip happens to be selected — the chip only
+      // constrains browsing when there's no search query typed.
+      return q ? qOk : catOk;
     }).sort((a, b) => a.name.localeCompare(b.name));
   }, [debouncedQuery, activeCat]);
   const myList = useMemo(() => BUSINESSES.filter(b => mine[b.id]).sort((a, b) => a.name.localeCompare(b.name)), [mine]);
@@ -2981,7 +2984,7 @@ function App() {
     }
   }, [{
     n: "A",
-    text: /*#__PURE__*/React.createElement(React.Fragment, null, "Click ", /*#__PURE__*/React.createElement("strong", null, "Nominate on Best of LI"), ". This copies the FourLeaf nomination form link. Paste that link into a new browser window so you can see this checklist and the form side by side. Use that same window for each nomination link.")
+    text: /*#__PURE__*/React.createElement(React.Fragment, null, "Check the box on any business you want to nominate — search up top if you're looking for a specific one. Then click ", /*#__PURE__*/React.createElement("strong", null, "MY LIST"), " and hit ", /*#__PURE__*/React.createElement("strong", null, "Nominate"), " on a business there. This copies the FourLeaf nomination form link. Paste that link into a new browser window so you can see your list and the form side by side. Use that same window for each nomination link.")
   }, {
     n: "B",
     text: /*#__PURE__*/React.createElement(React.Fragment, null, "Choose the nomination ", /*#__PURE__*/React.createElement("strong", null, "Category"), " ", /*#__PURE__*/React.createElement("span", {
@@ -3199,60 +3202,55 @@ function App() {
   }, `${filtered.length} business${filtered.length === 1 ? "" : "es"}`), /*#__PURE__*/React.createElement("div", {
     style: {
       display: "grid",
-      gap: 10
+      gap: 6
     }
   }, filtered.map(b => {
     const checked = !!mine[b.id];
-    const nomCount = community[b.id] || 0;
-    const nomUrl = `${NOM_BASE}${b.slug}/`;
     return /*#__PURE__*/React.createElement("div", {
       key: b.id,
       className: "lbrk-card",
+      onClick: () => toggleMine(b.id),
       style: {
         background: "var(--paper-2)",
         border: `1px solid ${checked ? "var(--gold)" : "var(--line)"}`,
-        borderRadius: 12,
-        padding: "14px 16px",
+        borderRadius: 10,
+        padding: "10px 14px",
         display: "flex",
         gap: 12,
-        alignItems: "flex-start"
+        alignItems: "center",
+        cursor: "pointer"
       }
-    }, /*#__PURE__*/React.createElement("button", {
+    }, /*#__PURE__*/React.createElement("div", {
       "aria-label": checked ? `Remove ${b.name} from my list` : `Add ${b.name} to my list`,
-      onClick: () => toggleMine(b.id),
       style: {
-        marginTop: 2,
         flexShrink: 0,
-        width: 24,
-        height: 24,
-        borderRadius: 7,
+        width: 22,
+        height: 22,
+        borderRadius: 6,
         border: `1.5px solid ${checked ? "var(--green)" : "var(--line)"}`,
         background: checked ? "var(--green)" : "transparent",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        cursor: "pointer"
+        justifyContent: "center"
       }
     }, checked && /*#__PURE__*/React.createElement(Check, {
-      size: 15,
+      size: 14,
       color: "white",
       strokeWidth: 3
     })), /*#__PURE__*/React.createElement("div", {
       style: {
         flex: 1,
-        minWidth: 0
-      }
-    }, /*#__PURE__*/React.createElement("div", {
-      style: {
+        minWidth: 0,
         display: "flex",
         justifyContent: "space-between",
         gap: 8,
+        alignItems: "center",
         flexWrap: "wrap"
       }
     }, /*#__PURE__*/React.createElement("div", {
       style: {
         fontWeight: 700,
-        fontSize: 15,
+        fontSize: 14.5,
         fontFamily: "'Fraunces', serif"
       }
     }, b.name), /*#__PURE__*/React.createElement("div", {
@@ -3264,122 +3262,26 @@ function App() {
       }
     }, SUBCATEGORY_PARENT[b.bestOfCategory] && /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 10.5,
         fontWeight: 600,
         color: "var(--ink)",
         opacity: 0.6,
         background: "#EDEAE0",
-        padding: "2px 9px",
+        padding: "2px 8px",
         borderRadius: 999,
         whiteSpace: "nowrap"
       }
     }, SUBCATEGORY_PARENT[b.bestOfCategory]), /*#__PURE__*/React.createElement("div", {
       style: {
-        fontSize: 11,
+        fontSize: 10.5,
         fontWeight: 600,
         color: "var(--green)",
         background: "#E7EEE9",
-        padding: "2px 9px",
+        padding: "2px 8px",
         borderRadius: 999,
         whiteSpace: "nowrap"
       }
-    }, b.bestOfCategory))), b.phone && /*#__PURE__*/React.createElement("div", {
-      style: {
-        fontSize: 12.5,
-        opacity: 0.65,
-        marginTop: 3
-      }
-    }, b.phone), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: "6px 8px",
-        marginTop: 10,
-        marginBottom: 10
-      }
-    }, /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "1",
-      label: "Nominee",
-      value: b.nomineeCopyName || b.name,
-      onCopy: copyField,
-      required: true
-    }), /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "2",
-      label: "Nominee Address",
-      value: b.street,
-      onCopy: copyField,
-      required: true
-    }), /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "3",
-      label: "Nominee City",
-      value: b.city,
-      onCopy: copyField,
-      required: true
-    }), /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "4",
-      label: b.website ? "Nominee Website" : b.socialUrl ? `Website (no site — ${b.socialLabel})` : "Nominee Website",
-      value: b.website ? b.website.startsWith("http") ? b.website : `https://${b.website}` : b.socialUrl ? b.socialUrl.startsWith("http") ? b.socialUrl : `https://${b.socialUrl}` : "",
-      onCopy: copyField,
-      required: true
-    })), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "flex",
-        gap: 8,
-        flexWrap: "wrap",
-        alignItems: "center"
-      }
-    }, /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        copyField("form link", `${NOM_BASE}${b.slug}/`);
-        logNomination(b, false);
-      },
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        fontSize: 12.5,
-        fontWeight: 600,
-        color: "white",
-        background: "var(--gold)",
-        padding: "6px 12px",
-        borderRadius: 8,
-        border: "none",
-        cursor: "pointer",
-        fontFamily: "inherit"
-      }
-    }, (() => {
-      const Icon = PrimaryNominateIcon(b);
-      return /*#__PURE__*/React.createElement(React.Fragment, null, primaryNominateLabel(b), " ", /*#__PURE__*/React.createElement(Icon, {
-        size: 13
-      }));
-    })()), nomCount > 0 && /*#__PURE__*/React.createElement("span", {
-      style: {
-        fontSize: 11.5,
-        opacity: 0.55
-      }
-    }, nomCount, " nomination", nomCount === 1 ? "" : "s", " logged"), isFoodEligible(b) && /*#__PURE__*/React.createElement("button", {
-      onClick: () => {
-        copyField("form link", `${NOM_BASE}food/`);
-        logNomination(b, true);
-      },
-      style: {
-        display: "flex",
-        alignItems: "center",
-        gap: 5,
-        fontSize: 12.5,
-        fontWeight: 600,
-        color: "white",
-        background: "#B5651D",
-        padding: "6px 12px",
-        borderRadius: 8,
-        border: "none",
-        cursor: "pointer",
-        fontFamily: "inherit",
-        marginLeft: "auto"
-      }
-    }, /*#__PURE__*/React.createElement(Utensils, {
-      size: 13
-    }), " Nominate Food Item"))));
+    }, b.bestOfCategory))));
   }), filtered.length === 0 && /*#__PURE__*/React.createElement("div", {
     style: {
       textAlign: "center",
