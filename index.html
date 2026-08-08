@@ -3196,11 +3196,10 @@ function App() {
   }, /*#__PURE__*/React.createElement(ClipboardList, {
     size: 16
   }), " MY LIST (", myCount, ")")), /*#__PURE__*/React.createElement("div", {
-    className: "lbrk-scroll",
     style: {
       display: "flex",
       gap: 8,
-      overflowX: "auto",
+      flexWrap: "wrap",
       padding: "14px 0 6px"
     }
   }, ["All", ...CATEGORIES].map(cat => /*#__PURE__*/React.createElement("div", {
@@ -3361,7 +3360,19 @@ function App() {
         alignItems: "center",
         gap: 6
       }
-    }, poppedOut ? /*#__PURE__*/React.createElement("button", {
+    }, poppedOut ? /*#__PURE__*/React.createElement(React.Fragment, null, myCount > 0 && /*#__PURE__*/React.createElement("button", {
+      onClick: clearMyList,
+      title: "Remove every business from your list",
+      style: {
+        background: "none",
+        border: "none",
+        cursor: "pointer",
+        padding: 4,
+        fontSize: 12,
+        fontWeight: 600,
+        color: "#a04a3a"
+      }
+    }, "Clear list"), /*#__PURE__*/React.createElement("button", {
       onClick: closeMyListPip,
       style: {
         background: "none",
@@ -3376,7 +3387,7 @@ function App() {
       }
     }, "Pop back in ", /*#__PURE__*/React.createElement(X, {
       size: 16
-    })) : /*#__PURE__*/React.createElement(React.Fragment, null, myCount > 0 && /*#__PURE__*/React.createElement("button", {
+    }))) : /*#__PURE__*/React.createElement(React.Fragment, null, myCount > 0 && /*#__PURE__*/React.createElement("button", {
       onClick: clearMyList,
       title: "Remove every business from your list",
       style: {
@@ -3439,37 +3450,6 @@ function App() {
         fontSize: 13.5
       }
     }, b.name), /*#__PURE__*/React.createElement("div", {
-      style: {
-        display: "grid",
-        gridTemplateColumns: poppedOut ? "1fr" : "1fr 1fr",
-        gap: "5px 6px",
-        marginTop: 8
-      }
-    }, /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "1",
-      label: "Nominee",
-      value: b.nomineeCopyName || b.name,
-      onCopy: copyField,
-      required: true
-    }), /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "2",
-      label: "Nominee Address",
-      value: b.street,
-      onCopy: copyField,
-      required: true
-    }), /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "3",
-      label: "Nominee City",
-      value: b.city,
-      onCopy: copyField,
-      required: true
-    }), /*#__PURE__*/React.createElement(FieldCopy, {
-      num: "4",
-      label: b.website ? "Nominee Website" : b.socialUrl ? b.socialLabel : "Nominee Website",
-      value: b.website ? b.website.startsWith("http") ? b.website : `https://${b.website}` : b.socialUrl ? b.socialUrl.startsWith("http") ? b.socialUrl : `https://${b.socialUrl}` : "",
-      onCopy: copyField,
-      required: true
-    })), /*#__PURE__*/React.createElement("div", {
       style: {
         display: "flex",
         gap: 6,
@@ -3554,7 +3534,38 @@ function App() {
         fontFamily: "inherit",
         marginLeft: "auto"
       }
-    }, "Remove"))))));
+    }, "Remove")), /*#__PURE__*/React.createElement("div", {
+      style: {
+        display: "grid",
+        gridTemplateColumns: poppedOut ? "1fr" : "1fr 1fr",
+        gap: "5px 6px",
+        marginTop: 10
+      }
+    }, /*#__PURE__*/React.createElement(FieldCopy, {
+      num: "1",
+      label: "Nominee",
+      value: b.nomineeCopyName || b.name,
+      onCopy: copyField,
+      required: true
+    }), /*#__PURE__*/React.createElement(FieldCopy, {
+      num: "2",
+      label: "Nominee Address",
+      value: b.street,
+      onCopy: copyField,
+      required: true
+    }), /*#__PURE__*/React.createElement(FieldCopy, {
+      num: "3",
+      label: "Nominee City",
+      value: b.city,
+      onCopy: copyField,
+      required: true
+    }), /*#__PURE__*/React.createElement(FieldCopy, {
+      num: "4",
+      label: b.website ? "Nominee Website" : b.socialUrl ? b.socialLabel : "Nominee Website",
+      value: b.website ? b.website.startsWith("http") ? b.website : `https://${b.website}` : b.socialUrl ? b.socialUrl.startsWith("http") ? b.socialUrl : `https://${b.socialUrl}` : "",
+      onCopy: copyField,
+      required: true
+    }))))));
     if (poppedOut) {
       return ReactDOM.createPortal(listContent, pipWindow.document.body);
     }
